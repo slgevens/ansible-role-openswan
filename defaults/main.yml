@@ -7,3 +7,8 @@ openswan_config_options:
    nat_traversal: 'yes'
    virtual_private:
    oe: 'off'
+
+openswan_version: 2.6.49.1
+openswan_src_dir: openswan-{{ openswan_version }}
+openswan_tarball: "{{ openswan_src_dir }}.tar.gz"
+openswan_makefile_path: ./files/Makefile
