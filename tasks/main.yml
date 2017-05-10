@@ -1,11 +1,50 @@
 ---
 # tasks file for kostyrevaa.openswan
 
-- name: install package
+- name: install basics packages
   package:
-    name: openswan
+    name: '{ item }'
     state: present
 
+  with_items:
+    - libnss3-dev
+    - libnspr4-dev
+    - pkg-config
+    - libpam0g-dev
+    - libcap-ng-dev
+    - libcap-ng-utils
+    - libselinux1-dev
+    - libcurl4-nss-dev
+    - flex
+    - bison
+    - gcc
+    - make
+    - libunbound-dev
+    - libnss3-tools
+    - libevent-dev
+    - libgmp3-dev
+
+- name: get openswan
+  shell: >-
+    wget https://download.openswan.org/openswan/{{ openswan_tarball }}
+    chdir=/tmp
+    creates=/tmp/{{ openswan_tarball }}
+                    
+- name: unarchive
+  unarchive: >-
+    copy=no
+    src=/tmp/{{ openswan_tarball }}
+    dest=/tmp/
+    creates=/tmp/{{ openswan_src_dir }}
+    
+- name: setup Makefile
+  copy: >-  
+    dest=/tmp/{{ openswan_src_dir }}/Makefile.inc.local
+    src={{ openswan_makefile_path }}
+
+- name: make install
+  shell: make -s programs && make -s install chdir=/tmp/{{ openswan_src_dir }}
+    
 - name: render template /etc/ipsec.conf
   template:
     src: ipsec.conf.j2
